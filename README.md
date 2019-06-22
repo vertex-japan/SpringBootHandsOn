@@ -1,5 +1,6 @@
 # SpringBootHandsOn
 SpringBootを使ったWEBシステムの構築
+http://localhost:8081/home
 
 ## 構築memo
 - pom不明エラーはプラグイン新規インストールで解消する
