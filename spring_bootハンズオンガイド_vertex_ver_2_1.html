@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・ハンズオンガイド: Spring Boot + JDBC (拡張版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .nav-link.active {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #0d6efd;
+        }
+        .code-block {
+            position: relative;
+            background-color: #282c34;
+            color: #abb2bf;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Menlo', 'Consolas', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #4b5563;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #6b7280;
+        }
+        .file-tree {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            padding: 1.5rem;
+            border-radius: 8px;
+            line-height: 1.8;
+        }
+        .file-tree span {
+            display: block;
+        }
+        .file-tree .folder {
+            color: #212529;
+            font-weight: 500;
+        }
+        .file-tree .file {
+            color: #495057;
+        }
+        .file-tree .comment {
+            color: #6c757d;
+            font-style: italic;
+        }
+        .tab-btn.active {
+            border-color: #0d6efd;
+            background-color: #0d6efd;
+            color: white;
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 lg:w-72 bg-white border-r border-gray-200 p-4 md:p-6 md:sticky top-0 h-screen overflow-y-auto">
+            <h1 class="text-xl font-bold text-gray-900 mb-6">Spring Bootハンズオンガイド</h1>
+            <nav id="main-nav">
+                <ul>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="intro">はじめに</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step0">Step 0: 環境構築</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step1">Step 1: プロジェクト作成</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step2">Step 2: 初期状態での実行確認</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step3">Step 3: ビルド設定の変更</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step4">Step 4: 設定ファイルの作成</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step5">Step 5: JDBC関連ファイルの作成</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step6">Step 6: ServiceとControllerの実装</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step7">Step 7: Thymeleafテンプレート作成</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step8">Step 8: 実行と確認</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="exp_step">Webアプリの拡張</a></li>
+                    
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 bg-gray-50">
+            <div id="content-container">
+                <!-- Introduction Section -->
+                <section id="intro" class="content-section space-y-8">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">はじめに</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p class="mb-4">バーテックスのインタラクティブガイドへようこそ。ここでは、Spring Boot, JDBC, Thymeleaf を使用したシンプルなWEBアプリケーションの作成手順を、ステップバイステップで学習します。左のナビゲーションメニューから各ステップを選択して、学習を開始してください。</p>
+                        <p>実装する主な機能は、従業員の一覧表示、登録、更新、削除（CRUD）です。</p>
+                    </div>
+                    
+                    <h3 class="text-2xl font-semibold text-gray-800">使用技術</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">☕</span>
+                            <p class="font-semibold mt-2">Spring Boot</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">🍃</span>
+                            <p class="font-semibold mt-2">Thymeleaf</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">🗄️</span>
+                            <p class="font-semibold mt-2">JDBC</p>
+                        </div>
+                         <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">🐘</span>
+                            <p class="font-semibold mt-2">Gradle</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">💡</span>
+                            <p class="font-semibold mt-2">Eclipse</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">📄</span>
+                            <p class="font-semibold mt-2">H2 Database</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold text-gray-800 mt-8">Tips:アプリケーションを支える技術</h3>
+                    <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4 flex flex-wrap">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="mvc-tab">MVCパターン</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="ormapper-tab">JDBC</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="di-tab">依存性の注入 (DI)</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="thymeleaf-tab">テンプレートエンジン (Thymeleaf)</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="mvc-tab" class="tab-pane">
+                                <div class="space-y-3 pt-2">
+                                    <p class="text-gray-700">このアプリケーションは、<strong>MVC (Model-View-Controller)</strong> という設計パターンに基づいて構築されています。これは、アプリケーションを3つの役割に分割することで、見通しが良く、メンテナンスしやすい構造を保つための考え方です。</p>
+                                    <ul class="space-y-3 pl-5 list-disc">
+                                        <li>
+                                            <strong class="font-semibold text-gray-800">Model (モデル):</strong>
+                                            <p class="text-gray-700">アプリケーションのデータとビジネスロジック（処理）を担当します。今回のハンズオンでは、<code class="bg-gray-200 px-1 rounded">Member</code>エンティティ、<code class="bg-gray-200 px-1 rounded">MemberDao</code>、<code class="bg-gray-200 px-1 rounded">MemberService</code>がこれに該当します。</p>
+                                        </li>
+                                        <li>
+                                            <strong class="font-semibold text-gray-800">View (ビュー):</strong>
+                                            <p class="text-gray-700">ユーザーに見える部分（UI）を担当します。今回は、Thymeleafで作成する<code class="bg-gray-200 px-1 rounded">list.html</code>や<code class="bg-gray-200 px-1 rounded">form.html</code>がこれに該当します。</p>
+                                        </li>
+                                        <li>
+                                            <strong class="font-semibold text-gray-800">Controller (コントローラ):</strong>
+                                            <p class="text-gray-700">ユーザーからのリクエストを受け取り、ModelとViewを制御する司令塔の役割を担います。<code class="bg-gray-200 px-1 rounded">MemberController</code>がこれに該当します。一般的に、Controllerにはビジネスロジック（業務処理）を直接記述せず、Serviceレイヤーを呼び出すことに専念させることで、関心事（アプリケーション上でプログラムや各モジュールが持つ機能、役割）が明確に分離され、見通しの良い設計になります。</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="ormapper-tab" class="tab-pane">
+                                <div class="space-y-3 pt-2">
+                                    <p class="text-gray-700">JDBC (Java Database Connectivity) は、Javaアプリケーションからデータベースに接続し、SQLを実行するための標準APIです。Spring Frameworkは、このJDBCをより使いやすくするための抽象化レイヤーを提供しており、定型的な処理（接続の確立、ステートメントの準備、結果セットの処理、リソースの解放など）を自動化してくれます。</p>
+                                    <p class="text-gray-700">このハンズオンでは、Springが提供する <code class="bg-gray-200 px-1 rounded">JdbcTemplate</code> を使用します。<code class="bg-gray-200 px-1 rounded">JdbcTemplate</code> を使うことで、SQLの実行、結果のオブジェクトへのマッピング、エラーハンドリングなどを簡潔に記述できます。</p>
+                                    <p class="text-gray-700">今回は手軽なインメモリデータベースであるH2を使用しますが、設定を変更すればMySQLやPostgreSQLなど、他のデータベースに切り替えることも容易です。</p>
+                                    <div class="code-block !p-4 text-sm mt-4">
+                                        <code>
+// MemberDao.java (一部抜粋)
+@Repository
+public class MemberDao {
+    private final JdbcTemplate jdbcTemplate;
+
+    public MemberDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<Member> selectAll() {
+        String sql = "SELECT id, name, age FROM member ORDER BY id";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Member member = new Member();
+            member.setId(rs.getInt("id"));
+            member.setName(rs.getString("name"));
+            member.setAge(rs.getInt("age"));
+            return member;
+        });
+    }
+}
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="di-tab" class="tab-pane">
+                                <div class="space-y-3 pt-2">
+                                    <p class="text-gray-700">依存性の注入 (Dependency Injection) は、クラスが必要とする別のオブジェクト（依存関係）を、自身で生成するのではなく外部から与えてもらう設計手法です。</p>
+                                    <p class="text-gray-700">Spring Frameworkでは、この仕組みが中核を担っています。設定（<code class="bg-gray-200 px-1 rounded">@Configuration</code>や<code class="bg-gray-200 px-1 rounded">@Service</code>など）に基づき、Springはオブジェクトのインスタンスを原則として一つだけ（シングルトンとして）生成し、管理します。</p>
+                                    <p class="text-gray-700">そして、別のクラスでそのインスタンスが必要になった際、アノテーション（<code class="bg-gray-200 px-1 rounded">@Autowired</code>など）やコンストラクタを通じて、管理しているインスタンスを「注入」します。これにより、アプリケーション全体で同じインスタンスが効率的に使い回され、コンポーネントの再利用性やテストのしやすさが大幅に向上します。</p>
+                                    <p class="text-gray-700">例えば、<code class="bg-gray-200 px-1 rounded">MemberController</code>が<code class="bg-gray-200 px-1 rounded">MemberService</code>を利用する際に、Springがこの仕組みを使って自動的にインスタンスを渡してくれます。</p>
+                                    <div class="code-block !p-4 text-sm mt-4">
+                                        <code>
+// MemberController.java
+@Controller
+public class MemberController {
+    // ↓ SpringがMemberServiceのインスタンスを自動で渡してくれる
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
+    // ...
+}
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="thymeleaf-tab" class="tab-pane">
+                                <div class="space-y-3 pt-2">
+                                    <p class="text-gray-700">Thymeleafは、Javaのためのサーバーサイドテンプレートエンジンです。HTMLファイル内に特別な属性（<code class="bg-gray-200 px-1 rounded">th:*</code>）を記述することで、動的なコンテンツを埋め込むことができます。</p>
+                                    <p class="text-gray-700">Controllerのメソッドがテンプレート名（例: <code class="bg-gray-200 px-1 rounded">"list"</code>）を返すと、Spring Bootは対応するHTMLファイル（例: <code class="bg-gray-200 px-1 rounded">list.html</code>）を探し、Thymeleafに処理を依頼します。</p>
+                                    <p class="text-gray-700">Thymeleafは、Controllerから渡されたデータ（Model）を元に、<code class="bg-gray-200 px-1 rounded">th:*</code>属性を解釈・実行し、最終的なHTMLを生成します。この完成したHTMLが、ユーザーのブラウザに送信されるのです。</p>
+                                    <div class="code-block !p-4 text-sm mt-4">
+                                        <code>
+&lt;!-- list.html --&gt;
+&lt;!-- Controllerから渡された"members"リストをループ処理 --&gt;
+&lt;tr th:each="member : ${members}"&gt;
+    &lt;td th:text="${member.id}"&gt;1&lt;/td&gt;
+    &lt;td th:text="${member.name}"&gt;山田 太郎&lt;/td&gt;
+&lt;/tr&gt;
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold text-gray-800">最終的なプロジェクト構成</h3>
+                    <div class="file-tree">
+                        <span class="folder">.</span>
+                        <span class="file" style="padding-left: 1rem;">├── build.gradle</span>
+                        <span class="folder" style="padding-left: 1rem;">└── src</span>
+                        <span class="folder" style="padding-left: 2rem;">└── main</span>
+                        <span class="folder" style="padding-left: 3rem;">├── java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　└── com/example/demo</span></span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　├── DemoApplication.java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　├── controller</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　│　　└── MemberController.java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　├── dao</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　│　　└── MemberDao.java</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　│　　└── MemberDaoImpl.java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　├── entity</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　│　　└── Member.java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　└── service</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　　　　└── MemberService.java</span>
+                        <span class="folder" style="padding-left: 3rem;">└── resources</span>
+                        <span class="folder" style="padding-left: 6rem;">├── META-INF</span>
+                        <span class="folder" style="padding-left: 6rem;">│　　　└── com/example/demo/dao/MemberDao/</span>
+                        <span class="file" style="padding-left: 6rem;">│　　　　　　├── ... (SQL files)</span>
+                        <span class="file" style="padding-left: 6rem;">├── application.yml</span>
+                        <span class="file" style="padding-left: 6rem;">├── schema.sql</span>
+                        <span class="folder" style="padding-left: 6rem;">└── templates</span>
+                        <span class="file" style="padding-left: 10rem;">├── form.html</span>
+                        <span class="file" style="padding-left: 10rem;">└── list.html</span>
+                    </div>
+                </section>
+
+                <!-- Step 0 Section -->
+                <section id="step0" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 0: 環境構築 (Windows)</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>開発を始める前に、Java開発環境とEclipse IDEをセットアップします。このセクションでは、Java 17 (Azul Zulu OpenJDK) と、便利なプラグインが同梱されたEclipse (Pleiades All in One) のインストール手順を説明します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">1. Java (JDK) のインストール</h3>
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li><a href="https://www.azul.com/downloads/?version=java-17-lts&os=windows&architecture=x86-64-bit&package=jdk#zulu" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Azul Zuluのダウンロードページ</a>からJava 17 (LTS) の `.msi` インストーラーをダウンロードします。</li>
+                            <li>インストーラーを実行し、指示に従います。`Set JAVA_HOME variable` が有効になっていることを確認してください。</li>
+                            <li>インストール後、コマンドプロンプトで `java --version` を実行し、バージョンが表示されることを確認します。</li>
+                        </ol>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                         <h3 class="text-xl font-semibold">2. Eclipse の準備</h3>
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li><a href="https://mergedoc.osdn.jp/pleiades_distros.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Pleiades All in One ダウンロードページ</a>からJavaのFull Editionをダウンロードします。</li>
+                            <li>zipファイルを `C:\pleiades` のような短いパスに展開します。</li>
+                            <li>`eclipse\eclipse.exe` を実行してEclipseを起動します。</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <!-- Step 1 Section -->
+                <section id="step1" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 1: EclipseでのSpring Bootプロジェクトの作成</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>このステップでは、Eclipseに統合されたSpringスターター機能を使って、アプリケーションの土台となるプロジェクトを作成します。必要な依存関係（ライブラリ）もこの時点で選択します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <ol class="list-decimal list-inside space-y-4">
+                            <li>Eclipseのメニューから `ファイル` > `新規` > `Spring スターター・プロジェクト` を選択します。</li>
+                            <li>
+                                プロジェクト情報を入力します:
+                                <ul class="list-disc list-inside ml-6 mt-2 bg-gray-50 p-3 rounded-md">
+                                    <li><strong>名前</strong>: `demo`</li>
+                                    <li><strong>タイプ</strong>: `Gradle - Groovy`</li>
+                                    <li><strong>Java バージョン</strong>: `17`</li>
+                                    <li><strong>グループ</strong>: `com.example`</li>
+                                    <li><strong>パッケージ</strong>: `com.example.demo`</li>
+                                </ul>
+                            </li>
+                            <li>
+                                依存関係の画面で、以下を選択して「完了」をクリックします:
+                                <ul class="list-disc list-inside ml-6 mt-2 bg-gray-50 p-3 rounded-md">
+                                    <li>Developer Tools > <strong>Lombok</strong></li>
+                                    <li>Template Engines > <strong>Thymeleaf</strong></li>
+                                    <li>SQL > <strong>H2 Database</strong></li>
+                                    <li>Web > <strong>Spring Web</strong></li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <!-- Step 2 Section -->
+                <section id="step2" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 2: 初期状態での実行確認</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>機能を追加していく前に、まずはプロジェクトが作成された直後の「素の」状態で正常に起動し、リクエストを処理できることを確認します。問題が発生した際に原因を切り分けやすくするための重要な工程です。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">1. アプリケーションの実行とエラー確認</h3>
+                        <p>Eclipseのパッケージ・エクスプローラーで `DemoApplication.java` を右クリックし、`実行` > `Spring Boot アプリケーション` を選択します。</p>
+                        <p class="mt-2">コンソールにエラーがなく起動したら、ブラウザで <a href="http://localhost:8080" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">http://localhost:8080</a> にアクセスします。この時点では何も表示するページがないため、「Whitelabel Error Page」が表示されますが、これは正常な動作です。</p>
+                        <p class="mt-2">確認が終わったら、一度アプリケーションを停止してください。</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">2. Hello Worldの表示</h3>
+                        <p>次に、最小限のControllerとHTMLテンプレートを作成し、Webページが正しく表示されることを確認します。</p>
+                        <div class="code-tab-container mt-4">
+                            <div class="tab-buttons border-b border-gray-200 mb-4">
+                                <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="hello-controller-file">HelloController.java</button>
+                                <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="hello-html-file">hello.html</button>
+                            </div>
+                            <div class="tab-content">
+                                <div id="hello-controller-file" class="tab-pane">
+                                    <p class="mb-2">`com.example.demo.controller` パッケージに `HelloController.java` を作成します。</p>
+                                    <div class="code-block">
+                                    <button class="copy-btn">Copy</button>
+                                    <code>
+package com.example.demo.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HelloController {
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello"; // templates/hello.html を呼び出す
+    }
+}
+                                    </code>
+                                    </div>
+                                </div>
+                                <div id="hello-html-file" class="tab-pane">
+                                    <p class="mb-2">`src/main/resources/templates` フォルダに `hello.html` を作成します。</p>
+                                    <div class="code-block">
+                                    <button class="copy-btn">Copy</button>
+                                    <code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Hello&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello, Spring Boot!&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                                    </code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">3. 再度実行して確認</h3>
+                        <p>ファイルを作成したら、もう一度アプリケーションを起動します。今度はブラウザで <a href="http://localhost:8080/hello" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">http://localhost:8080/hello</a> にアクセスしてください。</p>
+                        <p>「Hello, Spring Boot!」と表示されれば、Spring MVCとThymeleafが正常に連携していることの証明になります。</p>
+                        <p class="mt-2">この確認が完了したら、次のステップに進むためにアプリケーションを停止してください。</p>
+                    </div>
+                </section>
+
+                <!-- Step 3 Section -->
+                <section id="step3" class="content-section space-y-6">
+                     <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 3: ビルド設定の変更</h2>
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>プロジェクトの心臓部であるビルド設定ファイル `build.gradle` を編集し、ORマッパーであるDomaのライブラリを追加します。これにより、Javaのコードから簡単にデータベースを操作できるようになります。</p>
+                     </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-2">`build.gradle` の更新</h3>
+                        <p class="mb-4">以下の内容で `build.gradle` ファイルを全文上書きしてください。Domaの依存関係とアノテーションプロセッサーの設定が追加されています。</p>
+                        <div class="code-block">
+                            <button class="copy-btn">Copy</button>
+                            <code>
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    // Doma
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    runtimeOnly 'com.h2database:h2'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+                            </code>
+                        </div>
+                        <p class="mt-4">ファイルを保存した後、プロジェクトを右クリックし `Gradle` > `Gradleプロジェクトのリフレッシュ` を実行して、ライブラリをダウンロードしてください。</p>
+                     </div>
+                </section>
+                
+                <!-- Step 4 Section -->
+                <section id="step4" class="content-section space-y-6">
+                     <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 4: 設定ファイルの作成</h2>
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                         <p>このステップでは、アプリケーションの動作を定義する設定ファイルを作成します。データベース接続情報、ログ設定、そしてアプリケーション起動時にテーブルを作成するためのSQLを定義します。</p>
+                     </div>
+                     <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="yml-file">application.yml</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="schema-file">schema.sql</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="yml-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`application.yml`</h3>
+                                <p class="mb-4">`src/main/resources/application.properties` を削除し、代わりに `application.yml` を作成して以下の内容を記述します。</p>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc: DEBUG
+                                </code>
+                                </div>
+                            </div>
+                            <div id="schema-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`schema.sql`</h3>
+                                <p class="mb-4">`src/main/resources/` に `schema.sql` を作成します。従業員情報を格納する `member` テーブルを定義します。</p>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+CREATE TABLE IF NOT EXISTS member (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    age INT
+);
+                                </code>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </section>
+
+                <!-- Step 5 Section -->
+                <section id="step5" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 5: JDBC関連ファイルの作成</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>JDBC (Java Database Connectivity) を使用してデータベース操作を行うためのファイル群を作成します。データベースのテーブルとJavaのオブジェクトを対応付ける「エンティティ」、そしてSQLの実行を定義する「DAO」を実装します。</p>
+                    </div>
+                    <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4 flex flex-wrap">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="entity-file">Entity</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="dao-file">DAO Interface</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="dao-impl-file">DAO Implementation</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="sql-files">SQL Files</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="entity-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`entity/Member.java`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.demo.entity;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+@Data
+public class Member {
+    private Integer id;
+
+    @NotBlank(message = "名前は必須です")
+    @Size(max = 50, message = "名前は50文字以内で入力してください")
+    private String name;
+
+    @Min(value = 0, message = "年齢は0以上で入力してください")
+    private Integer age;
+}
+                                </code>
+                                </div>
+                            </div>
+                            <div id="dao-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`dao/MemberDao.java`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.demo.dao;
+
+import com.example.demo.entity.Member;
+import java.util.List;
+import java.util.Optional;
+
+public interface MemberDao {
+    List<Member> selectAll();
+    Optional<Member> selectById(Integer id);
+    int insert(Member member);
+    int update(Member member);
+    int delete(Integer id);
+}
+                                </code>
+                                </div>
+                            </div>
+                            <div id="dao-impl-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`dao/MemberDaoImpl.java`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.demo.dao;
+
+import com.example.demo.entity.Member;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class MemberDaoImpl implements MemberDao {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public MemberDaoImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private final RowMapper<Member> rowMapper = (rs, rowNum) -> {
+        Member member = new Member();
+        member.setId(rs.getInt("id"));
+        member.setName(rs.getString("name"));
+        member.setAge(rs.getInt("age"));
+        return member;
+    };
+
+    @Override
+    public List<Member> selectAll() {
+        String sql = "SELECT id, name, age FROM member ORDER BY id";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    @Override
+    public Optional<Member> selectById(Integer id) {
+        String sql = "SELECT id, name, age FROM member WHERE id = ?";
+        return jdbcTemplate.query(sql, rowMapper, id).stream().findFirst();
+    }
+
+    @Override
+    public int insert(Member member) {
+        String sql = "INSERT INTO member (name, age) VALUES (?, ?)";
+        return jdbcTemplate.update(sql, member.getName(), member.getAge());
+    }
+
+    @Override
+    public int update(Member member) {
+        String sql = "UPDATE member SET name = ?, age = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, member.getName(), member.getAge(), member.getId());
+    }
+
+    @Override
+    public int delete(Integer id) {
+        String sql = "DELETE FROM member WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
+}
+                                </code>
+                                </div>
+                            </div>
+                            <div id="sql-files" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">SQL Files (JDBC)</h3>
+                                <p class="mb-4">Spring JDBC (JdbcTemplate) を使用する場合、SQLは通常、DAOクラスのメソッド内に直接記述されます。Domaのように外部のSQLファイルを使用する必要はありません。</p>
+                                <p class="mb-4">これにより、SQLとJavaコードの関連性が明確になり、開発がよりシンプルになります。</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Step 6 Section -->
+                <section id="step6" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 6: ServiceとControllerの実装</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>アプリケーションのロジックを実装します。「Service」クラスがビジネスロジック（実際のデータ処理）を担当し、「Controller」クラスがユーザーからのWebリクエストを受け付けてServiceを呼び出し、結果を画面に返す役割を担います。</p>
+                    </div>
+                     <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="service-file">Service</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="controller-file">Controller</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="service-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`service/MemberService.java`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.demo.service;
+
+import com.example.demo.dao.MemberDao;
+import com.example.demo.entity.Member;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class MemberService {
+    private final MemberDao memberDao;
+
+    public MemberService(MemberDao memberDao) {
+        this.memberDao = memberDao;
+    }
+
+    public List&lt;Member&gt; findAll() {
+        return memberDao.selectAll();
+    }
+
+    public Optional&lt;Member&gt; findById(Integer id) {
+        return memberDao.selectById(id);
+    }
+
+    @Transactional
+    public Member save(Member member) {
+        if (member.getId() == null) {
+            memberDao.insert(member);
+        } else {
+            memberDao.update(member);
+        }
+        return member;
+    }
+
+    @Transactional
+    public void deleteById(Integer id) {
+        memberDao.delete(id);
+    }
+}
+                                </code>
+                                </div>
+                            </div>
+                             <div id="controller-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`controller/MemberController.java`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.demo.controller;
+
+import com.example.demo.entity.Member;
+import com.example.demo.service.MemberService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.List;
+
+@Controller
+@RequestMapping("/members")
+public class MemberController {
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    @GetMapping
+    public String listMembers(Model model) {
+        model.addAttribute("members", memberService.findAll());
+        return "list";
+    }
+
+    @GetMapping("/add")
+    public String showAddForm(@ModelAttribute Member member) {
+        return "form";
+    }
+
+    @PostMapping("/add")
+    public String addMember(Member member) {
+        memberService.save(member);
+        return "redirect:/members";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String showEditForm(@PathVariable Integer id, Model model) {
+        memberService.findById(id).ifPresent(member -> model.addAttribute("member", member));
+        return "form";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String editMember(Member member) {
+        memberService.save(member);
+        return "redirect:/members";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String deleteMember(@PathVariable Integer id) {
+        memberService.deleteById(id);
+        return "redirect:/members";
+    }
+}
+                                </code>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </section>
+                
+                <!-- Step 7 Section -->
+                <section id="step7" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 7: Thymeleafテンプレートの作成</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>ユーザーがブラウザで見る画面を作成します。Thymeleafというテンプレートエンジンを使い、動的なデータを表示するHTMLファイルを作成します。一覧画面と、登録・更新用のフォーム画面を用意します。</p>
+                    </div>
+                     <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="list-html">list.html</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="form-html">form.html</button>
+                        </div>
+                        <div class="tab-content">
+                             <div id="list-html" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`templates/list.html`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;従業員一覧&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="container mt-5"&gt;
+    &lt;h1&gt;従業員一覧&lt;/h1&gt;
+    &lt;div class="my-3"&gt;
+        &lt;a th:href="@{/members/add}" class="btn btn-primary"&gt;新規登録&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;table class="table table-striped table-bordered"&gt;
+        &lt;thead class="table-dark"&gt;
+        &lt;tr&gt;
+            &lt;th&gt;ID&lt;/th&gt;
+            &lt;th&gt;名前&lt;/th&gt;
+            &lt;th&gt;年齢&lt;/th&gt;
+            &lt;th&gt;操作&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        &lt;tr th:each="member : ${members}" th:object="${member}"&gt;
+            &lt;td th:text="*{id}"&gt;1&lt;/td&gt;
+            &lt;td th:text="*{name}"&gt;山田 太郎&lt;/td&gt;
+            &lt;td th:text="*{age}"&gt;30&lt;/td&gt;
+            &lt;td&gt;
+                &lt;a th:href="@{/members/{id}/edit(id=*{id})}" class="btn btn-sm btn-success"&gt;編集&lt;/a&gt;
+                &lt;form th:action="@{/members/{id}/delete(id=*{id})}" method="post" class="d-inline"&gt;
+                    &lt;button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('本当に削除しますか？')"&gt;削除&lt;/button&gt;
+                &lt;/form&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                                </code>
+                                </div>
+                            </div>
+                             <div id="form-html" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`templates/form.html`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;従業員情報フォーム&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="container mt-5"&gt;
+    &lt;h1 th:if="${member.id == null}"&gt;従業員 新規登録&lt;/h1&gt;
+    &lt;h1 th:unless="${member.id == null}"&gt;従業員 情報更新&lt;/h1&gt;
+
+    &lt;form th:action="${member.id == null} ? @{/members/add} : @{/members/{id}/edit(id=*{id})}" th:object="${member}" method="post"&gt;
+        &lt;input type="hidden" th:field="*{id}"&gt;
+        &lt;div class="mb-3"&gt;
+            &lt;label for="name" class="form-label"&gt;名前&lt;/label&gt;
+            &lt;input type="text" id="name" class="form-control" th:field="*{name}" required&gt;
+        &lt;/div&gt;
+        &lt;div class="mb-3"&gt;
+            &lt;label for="age" class="form-label"&gt;年齢&lt;/label&gt;
+            &lt;input type="number" id="age" class="form-control" th:field="*{age}"&gt;
+        &lt;/div&gt;
+        &lt;button type="submit" class="btn btn-primary"&gt;保存&lt;/button&gt;
+        &lt;a th:href="@{/members}" class="btn btn-secondary"&gt;キャンセル&lt;/a&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                                </code>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </section>
+                
+                <!-- Step 8 Section -->
+                <section id="step8" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 8: 実行と確認</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>いよいよ最終ステップです。作成したアプリケーションをEclipseから起動し、ブラウザで動作を確認します。また、開発に便利なH2データベースの管理画面へのアクセス方法も説明します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">1. アプリケーションの実行</h3>
+                        <p>Eclipseのパッケージ・エクスプローラーで `DemoApplication.java` を右クリックし、`実行` > `Spring Boot アプリケーション` を選択します。</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">2. ブラウザで確認</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>一覧画面</strong>: <a href="http://localhost:8080/members" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">http://localhost:8080/members</a></li>
+                            <li><strong>新規登録</strong>: 一覧画面の「新規登録」ボタンから登録。</li>
+                            <li><strong>更新</strong>: 一覧画面の「編集」リンクから更新。</li>
+                            <li><strong>削除</strong>: 一覧画面の「削除」ボタンから削除。</li>
+                        </ul>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">3. H2コンソールの確認</h3>
+                         <p>データベースの状態を直接確認できます。</p>
+                        <ul class="list-disc list-inside space-y-2">
+                             <li><a href="http://localhost:8080/h2-console" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">http://localhost:8080/h2-console</a> にアクセスします。</li>
+                             <li><strong>JDBC URL</strong>に `jdbc:h2:mem:testdb` を入力して `Connect` をクリックします。</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Expantion Step Section -->
+                <section id="exp_step" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Spring BootハンズオンWebアプリケーションの拡張</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p class="mb-4">このセクションでは、ハンズオンガイドに従って完成させたSpring Boot Webアプリケーションをさらに拡張させるための具体的な機能をいくつか挙げています。アプリケーションの堅牢性、ユーザビリティ、機能性を向上させることができますので、ぜひ実装にチャレンジしてみましょう。</p>
+                    </div>
+
+                    <!-- Tab container -->
+                    <div>
+                        <!-- Tab navigation -->
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                <button data-tab-target="#tab-1" class="tab-btn border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                    1. 入力値検証 (Validation)
+                                </button>
+                                <button data-tab-target="#tab-2" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                    2. ページネーションとソート
+                                </button>
+                                <button data-tab-target="#tab-3" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                    3. 検索・絞り込み
+                                </button>
+                            </nav>
+                        </div>
+
+                        <!-- Tab content -->
+                        <div class="mt-6">
+                            <div id="tab-1" class="tab-content bg-white p-6 rounded-lg shadow-sm space-y-4">
+                                <h3 class="text-2xl font-semibold text-gray-800">1. 入力値検証 (Validation) の追加</h3>
+                                <p>フォームからの入力データに対して、サーバーサイドでの検証ロジックを追加します。これにより、不正なデータがデータベースに保存されるのを防ぎ、ユーザーに適切なフィードバックを提供できます。</p>
+                                <h4 class="text-xl font-semibold mt-4">実装のポイント:</h4>
+                                <ul class="list-disc list-inside space-y-2 ml-4">
+                                    <li><strong>依存関係の追加:</strong> `build.gradle`に`spring-boot-starter-validation`を追加します。</li>
+                                    <li><strong>エンティティ/フォームオブジェクトへのアノテーション:</strong> `Member`エンティティ（または専用のフォームオブジェクト）のフィールドに、`@NotNull`, `@Size`, `@Min`, `@Max`などのJakarta Validationアノテーションを付与します。</li>
+                                    <li><strong>Controllerでの検証:</strong> `Controller`のメソッド引数に`@Valid`アノテーションと`BindingResult`オブジェクトを追加し、検証結果を処理します。</li>
+                                    <li><strong>Thymeleafでのエラー表示:</strong> `form.html`に`th:errors`などを使用して、検証エラーメッセージを表示するロジックを追加します。</li>
+                                </ul>
+                                <h4 class="text-xl font-semibold mt-4">コード例 (Memberエンティティの一部):</h4>
+                                <div class="code-block">
+                                    <code>
+package com.example.demo.entity;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+@Data
+public class Member {
+    private Integer id;
+
+    @NotBlank(message = "名前は必須です")
+    @Size(max = 50, message = "名前は50文字以内で入力してください")
+    private String name;
+
+    @Min(value = 0, message = "年齢は0以上で入力してください")
+    private Integer age;
+}
+                                    </code>
+                                </div>
+                                <h4 class="text-xl font-semibold mt-4">コード例 (MemberControllerの一部):</h4>
+                                <div class="code-block">
+                                    <code>
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
+
+// ...
+
+    @PostMapping("/add")
+    public String addMember(@Valid @ModelAttribute Member member, BindingResult result) {
+        if (result.hasErrors()) {
+            return "form"; // エラーがあればフォームに戻る
+        }
+        memberService.save(member);
+        return "redirect:/members";
+    }
+                                    </code>
+                                </div>
+                            </div>
+                            <div id="tab-2" class="tab-content hidden bg-white p-6 rounded-lg shadow-sm space-y-4">
+                                <h3 class="text-2xl font-semibold text-gray-800">2. ページネーションとソート機能の追加</h3>
+                                <p>大量のデータを扱う際に必須となるページネーション（ページ送り）と、表示順序を制御するソート機能を追加します。これにより、ユーザーは効率的にデータを閲覧できます。</p>
+                                <h4 class="text-xl font-semibold mt-4">実装のポイント:</h4>
+                                <ul class="list-disc list-inside space-y-2 ml-4">
+                                    <li><strong>Controllerの変更:</strong> `listMembers`メソッドに`@RequestParam`でページ番号、ページサイズ、ソート順（例: `page`, `size`, `sort`）を受け取る引数を追加します。</li>
+                                    <li><strong>Service/DAOの変更:</strong> `findAll`メソッドを修正し、ページングとソートの情報を元にデータベースからデータを取得するようにします。`JdbcTemplate`でこれらを実装するには、SQLに`LIMIT`, `OFFSET`, `ORDER BY`句を追加する必要があります。</li>
+                                    <li><strong>Thymeleafの変更:</strong> `list.html`にページネーションのリンク（前へ、次へ、ページ番号など）と、各カラムヘッダーにソート用のリンクを追加します。</li>
+                                </ul>
+                                <h4 class="text-xl font-semibold mt-4">コード例 (MemberServiceの一部):</h4>
+                                <div class="code-block">
+                                    <code>
+// MemberService.java
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+// ...
+
+    public Page<Member> findAll(Pageable pageable) {
+        // ここでJdbcTemplateを使ってページングとソートを適用したクエリを実行
+        // PageImplを使ってPageオブジェクトを構築
+        // 例: return new PageImpl<>(memberDao.findAll(pageable), pageable, memberDao.count());
+        return null; // 実際のJdbcTemplate実装は複雑になるため省略
+    }
+                                    </code>
+                                </div>
+                                <h4 class="text-xl font-semibold mt-4">コード例 (MemberControllerの一部):</h4>
+                                <div class="code-block">
+                                    <code>
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+
+// ...
+
+    @GetMapping
+    public String listMembers(Model model, @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        model.addAttribute("membersPage", memberService.findAll(pageable));
+        return "list";
+    }
+                                    </code>
+                                </div>
+                            </div>
+                            <div id="tab-3" class="tab-content hidden bg-white p-6 rounded-lg shadow-sm space-y-4">
+                                <h3 class="text-2xl font-semibold text-gray-800">3. 検索・絞り込み機能の追加</h3>
+                                <p>ユーザーが特定の条件でデータを絞り込めるように、検索フォームとロジックを追加します。これにより、目的の情報を素早く見つけられるようになります。</p>
+                                <h4 class="text-xl font-semibold mt-4">実装のポイント:</h4>
+                                <ul class="list-disc list-inside space-y-2 ml-4">
+                                    <li><strong>検索フォームの追加:</strong> `list.html`に検索キーワード（名前、年齢など）を入力するフォームを追加します。</li>
+                                    <li><strong>Controllerの変更:</strong> `listMembers`メソッドに検索条件を受け取る`@RequestParam`引数（例: `name`, `age`）を追加します。</li>
+                                    <li><strong>Service/DAOの変更:</strong> `findAll`メソッド（または新しい検索メソッド）を修正し、受け取った検索条件に基づいて動的にSQLの`WHERE`句を構築するようにします。`JdbcTemplate`では、条件に応じてSQLを組み立てるロジックが必要になります。</li>
+                                    <li><strong>Thymeleafの変更:</strong> 検索フォームの入力値を保持し、検索結果を表示するように`list.html`を調整します。</li>
+                                </ul>
+                                <h4 class="text-xl font-semibold mt-4">コード例 (MemberServiceの一部):</h4>
+                                <div class="code-block">
+                                    <code>
+// MemberService.java
+import java.util.List;
+
+// ...
+
+    public List<Member> searchMembers(String name, Integer age) {
+        // ここでJdbcTemplateを使って検索条件を適用したクエリを実行
+        // 例: return memberDao.search(name, age);
+        return null; // 実際のJdbcTemplate実装は複雑になるため省略
+    }
+                                    </code>
+                                </div>
+                                <h4 class="text-xl font-semibold mt-4">コード例 (MemberControllerの一部):</h4>
+                                <div class="code-block">
+                                    <code>
+// MemberController.java
+import org.springframework.web.bind.annotation.RequestParam;
+
+// ...
+
+    @GetMapping
+    public String listMembers(Model model,
+                              @RequestParam(required = false) String name,
+                              @RequestParam(required = false) Integer age) {
+        List<Member> members;
+        if (name != null || age != null) {
+            members = memberService.searchMembers(name, age);
+        } else {
+            members = memberService.findAll();
+        }
+        model.addAttribute("members", members);
+        return "list";
+    }
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const tabContainers = document.querySelectorAll('.code-tab-container');
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+
+
+    function showSection(targetId) {
+        contentSections.forEach(section => {
+            section.classList.toggle('active', section.id === targetId);
+        });
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.dataset.target === targetId);
+        });
+        window.scrollTo(0, 0);
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = e.currentTarget.dataset.target;
+            showSection(targetId);
+        });
+    });
+
+    tabContainers.forEach(container => {
+        const tabButtons = container.querySelectorAll('.tab-btn');
+        const tabPanes = container.querySelectorAll('.tab-pane');
+        
+        // Show first tab by default
+        if (tabButtons.length > 0) {
+            tabButtons[0].classList.add('active');
+        }
+        if (tabPanes.length > 0) {
+            tabPanes.forEach(pane => pane.style.display = 'none');
+            tabPanes[0].style.display = 'block';
+        }
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const targetId = e.currentTarget.dataset.target;
+                
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                
+                tabPanes.forEach(pane => {
+                    pane.style.display = pane.id === targetId ? 'block' : 'none';
+                });
+            });
+        });
+    });
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            const target = document.querySelector(this.dataset.tabTarget);
+
+            // Deactivate all tabs and hide all content
+            tabs.forEach(t => {
+                t.classList.remove('border-indigo-500', 'text-indigo-600');
+                t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            });
+            tabContents.forEach(c => {
+                c.classList.add('hidden');
+            });
+
+            // Activate the clicked tab and show its content
+            this.classList.add('border-indigo-500', 'text-indigo-600');
+            this.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            target.classList.remove('hidden');
+        });
+    });
+
+    copyButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const codeElement = e.currentTarget.nextElementSibling;
+            const textToCopy = codeElement.innerText;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = e.currentTarget.textContent;
+                e.currentTarget.textContent = 'Copied!';
+                setTimeout(() => {
+                    e.currentTarget.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+    });
+
+    // Show the intro section by default
+    showSection('intro');
+});
+</script>
+
+</body>
+</html>
