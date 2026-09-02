@@ -1090,8 +1090,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentSections = document.querySelectorAll('.content-section');
     const tabContainers = document.querySelectorAll('.code-tab-container');
     const copyButtons = document.querySelectorAll('.copy-btn');
-    const tabs = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+    const expTabs = document.querySelectorAll('[data-tab-target]');
+    const expTabContents = document.querySelectorAll('#exp_step .tab-content');
 
 
 
@@ -1139,16 +1139,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-    tabs.forEach(tab => {
+    expTabs.forEach(tab => {
         tab.addEventListener('click', function () {
-            const target = document.querySelector(this.dataset.tabTarget);
+            const targetId = this.dataset.tabTarget;
+            if (!targetId) return;
+            const target = document.querySelector(targetId);
+            if (!target) return;
 
             // Deactivate all tabs and hide all content
-            tabs.forEach(t => {
+            expTabs.forEach(t => {
                 t.classList.remove('border-indigo-500', 'text-indigo-600');
                 t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
             });
-            tabContents.forEach(c => {
+            expTabContents.forEach(c => {
                 c.classList.add('hidden');
             });
 
