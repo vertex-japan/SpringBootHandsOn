@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・ハンズオンガイド: Seasar2 + S2JDBC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .nav-link.active {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #0d6efd;
+        }
+        .code-block {
+            position: relative;
+            background-color: #282c34;
+            color: #abb2bf;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Menlo', 'Consolas', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #4b5563;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #6b7280;
+        }
+        .file-tree {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            padding: 1.5rem;
+            border-radius: 8px;
+            line-height: 1.8;
+        }
+        .file-tree span {
+            display: block;
+        }
+        .file-tree .folder {
+            color: #212529;
+            font-weight: 500;
+        }
+        .file-tree .file {
+            color: #495057;
+        }
+        .file-tree .comment {
+            color: #6c757d;
+            font-style: italic;
+        }
+        .tab-btn.active {
+            border-color: #0d6efd;
+            background-color: #0d6efd;
+            color: white;
+        }
+	.logo {
+	    width:200px;
+	    height:80px;
+	    padding:0;
+	    background-image:url("images/logo.png");
+	    background-size: cover;
+	    text-indent:-9999px;
+	}
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 lg:w-72 bg-white border-r border-gray-200 p-4 md:p-6 md:sticky top-0 h-screen overflow-y-auto">
+            <h1 class="text-xl font-bold text-gray-900 mb-6">
+		<p class="logo"></p>
+		Seasar2 ハンズオンガイド
+	    </h1>
+            <nav id="main-nav">
+                <ul>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="intro">はじめに</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step0">Step 0: 環境構築</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step1">Step 1: プロジェクト作成</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step2">Step 2: 初期状態での実行確認</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step3">Step 3: DB設定とSQL実行</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step4">Step 4: EntityとServiceの作成</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step5">Step 5: DTO, Form, Actionの作成</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step6">Step 6: JSP(画面)の作成</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="step7">Step 7: 実行と確認</a></li>
+                    <li><a href="#" class="nav-link block p-3 rounded-lg transition-colors duration-200 hover:bg-gray-100" data-target="exp_step">発展課題</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 bg-gray-50">
+            <div id="content-container">
+                <!-- Introduction Section -->
+                <section id="intro" class="content-section space-y-8">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">はじめに</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p class="mb-4">バーテックスのインタラクティブガイドへようこそ。ここでは、Seasar2, S2JDBC, JSP を使用したシンプルなWEBアプリケーションの作成手順を、ステップバイステップで学習します。左のナビゲーションメニューから各ステップを選択して、学習を開始してください。</p>
+                        <p>実装する主な機能は、従業員の一覧表示、登録、更新、削除（CRUD）です。</p>
+                    </div>
+                    
+                    <h3 class="text-2xl font-semibold text-gray-800">使用技術</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">🌊</span>
+                            <p class="font-semibold mt-2">Seasar2</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">📄</span>
+                            <p class="font-semibold mt-2">JSP</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">🗄️</span>
+                            <p class="font-semibold mt-2">S2JDBC</p>
+                        </div>
+                         <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">Ⓜ️</span>
+                            <p class="font-semibold mt-2">Maven</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">💡</span>
+                            <p class="font-semibold mt-2">Eclipse</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <span class="text-4xl">🐬</span>
+                            <p class="font-semibold mt-2">H2 Database</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold text-gray-800 mt-8">Tips:アプリケーションを支える技術</h3>
+                    <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4 flex flex-wrap">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="coc-tab">設定より規約 (CoC)</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="s2jdbc-tab">S2JDBC</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="di-tab">DIコンテナ (S2Container)</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="coc-tab" class="tab-pane">
+                                <div class="space-y-3 pt-2">
+                                    <p class="text-gray-700">Seasar2の最大の特徴は「設定より規約 (Convention over Configuration)」という設計思想です。これは、開発者が設定ファイルを記述する手間を省き、決められた規約（命名規則など）に従うだけで、フレームワークが自動的にコンポーネントを認識・連携させる仕組みです。</p>
+                                    <ul class="space-y-3 pl-5 list-disc">
+                                        <li>
+                                            <strong class="font-semibold text-gray-800">Action (アクション):</strong>
+                                            <p class="text-gray-700">クラス名の末尾が `Action` であれば、それはユーザーからのリクエストを処理するControllerの役割を持つと解釈されます。 (例: `EmployeeAction`)</p>
+                                        </li>
+                                        <li>
+                                            <strong class="font-semibold text-gray-800">Service (サービス):</strong>
+                                            <p class="text-gray-700">クラス名の末尾が `Service` であれば、ビジネスロジックを担当するクラスと解釈されます。 (例: `EmployeeService`)</p>
+                                        </li>
+                                        <li>
+                                            <strong class="font-semibold text-gray-800">自動インジェクション:</strong>
+                                            <p class="text-gray-700">`EmployeeAction` クラスに `EmployeeService` 型のプロパティがあれば、Seasar2は自動的に `EmployeeService` のインスタンスを「注入（インジェクション）」してくれます。これにより、開発者はインスタンス生成を意識する必要がなくなります。</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="s2jdbc-tab" class="tab-pane">
+                                <div class="space-y-3 pt-2">
+                                    <p class="text-gray-700">S2JDBCは、Seasar2プロジェクトで使われるO/Rマッパーです。SQLファイルを記述することなく、Javaのメソッド呼び出しだけでデータベース操作が可能です。</p>
+                                    <p class="text-gray-700">これも「設定より規約」の思想に基づいており、Entityクラスの定義からテーブル構造を、Serviceクラスのメソッド名から実行するSQLを自動的に推測します。</p>
+                                    <div class="code-block !p-4 text-sm mt-4">
+                                        <code>
+// EmployeeService.java (S2JDBCの例)
+public class EmployeeService extends AbstractService<Employee> {
+
+    // これだけで "SELECT * FROM employee" を実行するメソッドになる
+    public List<Employee> findAll() {
+        return select().getResultList();
+    }
+
+    // これだけで "SELECT * FROM employee WHERE id = ?" を実行するメソッドになる
+    public Employee findById(Integer id) {
+        return select().id(id).getSingleResult();
+    }
+}
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="di-tab" class="tab-pane">
+                                <div class="space-y-3 pt-2">
+                                    <p class="text-gray-700">依存性の注入 (Dependency Injection) は、Seasar2の中核をなす機能です。各コンポーネント（Action, Serviceなど）が必要とする別のコンポーネントを、Seasar2のDIコンテナ（S2Container）が自動的に生成し、注入します。</p>
+                                    <p class="text-gray-700">設定ファイル（diconファイル）にコンポーネントの定義を記述することもできますが、Seasar2の強力な自動登録機能により、多くの場合、命名規約に従うだけで自動的にコンポーネントとして認識され、DIが機能します。</p>
+                                    <p class="text-gray-700">これにより、クラス間の結合度が下がり、再利用性やテストのしやすさが大幅に向上します。</p>
+                                    <div class="code-block !p-4 text-sm mt-4">
+                                        <code>
+// EmployeeAction.java
+public class EmployeeAction {
+
+    // S2ContainerがEmployeeServiceのインスタンスを自動でセットしてくれる
+    public EmployeeService employeeService;
+
+    // ...
+}
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold text-gray-800">最終的なプロジェクト構成</h3>
+                    <div class="file-tree">
+                        <span class="folder">.</span>
+                        <span class="file" style="padding-left: 1rem;">├── pom.xml</span>
+                        <span class="folder" style="padding-left: 1rem;">└── src</span>
+                        <span class="folder" style="padding-left: 2rem;">└── main</span>
+                        <span class="folder" style="padding-left: 3rem;">├── java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　└── com/example/handson</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　├── action</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　│　　└── EmployeeAction.java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　├── dto</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　│　　└── EmployeeDto.java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　├── entity</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　│　　└── Employee.java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　├── form</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　│　　└── EmployeeForm.java</span>
+                        <span class="folder" style="padding-left: 3rem;">│　　　　　　└── service</span>
+                        <span class="file" style="padding-left: 3rem;">│　　　　　　　　　└── EmployeeService.java</span>
+                        <span class="folder" style="padding-left: 3rem;">└── resources</span>
+                        <span class="file" style="padding-left: 6rem;">├── jdbc.dicon</span>
+                        <span class="file" style="padding-left: 6rem;">├── s2jdbc.dicon</span>
+                        <span class="file" style="padding-left: 6rem;">├── convention.dicon</span>
+                        <span class="file" style="padding-left: 6rem;">└── log4j.properties</span>
+                        <span class="folder" style="padding-left: 2rem;">└── webapp</span>
+                        <span class="folder" style="padding-left: 3rem;">├── WEB-INF</span>
+                        <span class="file" style="padding-left: 4rem;">└── web.xml</span>
+                        <span class="folder" style="padding-left: 3rem;">└── view</span>
+                        <span class="folder" style="padding-left: 4rem;">└── employee</span>
+                        <span class="file" style="padding-left: 5rem;">├── list.jsp</span>
+                        <span class="file" style="padding-left: 5rem;">└── edit.jsp</span>
+                    </div>
+                </section>
+
+                
+                <!-- Step 0 Section -->
+                <section id="step0" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 0: 環境構築 (Windows)</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>開発を始める前に、Java開発環境とEclipse IDEをセットアップします。このセクションでは、Java 8 と、Seasar2開発を強力にサポートするプラグイン「Dolteng」が導入されたEclipse (Pleiades All in One) のインストール手順を説明します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">1. Java (JDK) のインストール</h3>
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li>Seasar2はJava 8との互換性が高いため、Java 8をインストールします。<a href="https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Oracleのサイト</a>などからJDK 8をダウンロードし、インストールしてください。</li>
+                            <li>環境変数 `JAVA_HOME` を設定し、`Path` に `%JAVA_HOME%\bin` を追加します。</li>
+                            <li>コマンドプロンプトで `java -version` と `javac -version` を実行し、バージョンが表示されることを確認します。</li>
+                        </ol>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                         <h3 class="text-xl font-semibold">2. Eclipse + Dolteng の準備</h3>
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li><a href="https://mergedoc.osdn.jp/pleiades_distros.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Pleiades All in One ダウンロードページ</a>から、Seasar2開発に適したバージョンのJava (Ultimate) をダウンロードします。（Java 8に対応したバージョンを選択してください）</li>
+                            <li>zipファイルを `C:\pleiades` のような短いパスに展開します。</li>
+                            <li>`eclipse\eclipse.exe` を実行してEclipseを起動します。</li>
+                            <li>メニューから `ヘルプ` > `新規ソフトウェアのインストール` を選択します。</li>
+                            <li>「作業対象」に `http://eclipse.seasar.org/updates/3.3/` を入力し、「Dolteng」にチェックを入れてインストールします。</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <!-- Step 1 Section -->
+                <section id="step1" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 1: Doltengによるプロジェクト作成</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>このステップでは、EclipseプラグインのDoltengを使って、S2JDBCを利用するWebアプリケーションの雛形を自動生成します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <ol class="list-decimal list-inside space-y-4">
+                            <li>Eclipseのメニューから `ファイル` > `新規` > `その他` を選択し、`Dolteng` > `Doltengプロジェクト` を選択します。</li>
+                            <li>
+                                プロジェクト情報を入力します:
+                                <ul class="list-disc list-inside ml-6 mt-2 bg-gray-50 p-3 rounded-md">
+                                    <li><strong>プロジェクト名</strong>: `s2jdbc-handson`</li>
+                                    <li><strong>ルート・パッケージ</strong>: `com.example.handson`</li>
+                                </ul>
+                            </li>
+                            <li>
+                                プロジェクト・タイプで `S2JDBCを利用するWebアプリケーション` を選択して「完了」をクリックします。
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-2">`pom.xml` の確認</h3>
+                        <p class="mb-4">Doltengによって、Mavenの基本的な設定ファイル `pom.xml` が生成されます。Seasar2やS2JDBC、H2 Databaseなどの依存関係が定義されていることを確認しましょう。</p>
+                        <div class="code-block">
+                            <button class="copy-btn">Copy</button>
+                            <code>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;com.example.handson&lt;/groupId&gt;
+  &lt;artifactId&gt;s2jdbc-handson&lt;/artifactId&gt;
+  &lt;packaging&gt;war&lt;/packaging&gt;
+  &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+  &lt;name&gt;s2jdbc-handson&lt;/name&gt;
+  
+  &lt;!-- (中略) Seasar2, S2JDBC, H2などのdependenciesが定義される --&gt;
+
+&lt;/project&gt;
+                            </code>
+                        </div>
+                        <p class="mt-4">プロジェクトを右クリックし `Maven` > `プロジェクトの更新` を実行して、ライブラリをダウンロードしてください。</p>
+                     </div>
+                </section>
+                
+                <!-- Step 2 Section -->
+                <section id="step2" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 2: 初期状態での実行確認</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>機能を追加していく前に、まずはプロジェクトが作成された直後の状態で正常に起動し、初期画面が表示されることを確認します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">1. アプリケーションの実行</h3>
+                        <p>Eclipseの「サーバー」ビューで、Tomcatなどのサーバーを右クリックし、「追加および除去」から `s2jdbc-handson` プロジェクトを追加します。</p>
+                        <p class="mt-2">サーバーを起動し、コンソールにエラーが出ないことを確認します。</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">2. 初期画面の確認</h3>
+                        <p>ブラウザで <a href="http://localhost:8080/s2jdbc-handson/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">http://localhost:8080/s2jdbc-handson/</a> にアクセスします。</p>
+                        <p>「Index」と書かれたシンプルな画面が表示されれば、プロジェクトの雛形が正常に動作していることの証明になります。</p>
+                        <p class="mt-2">この確認が完了したら、次のステップに進むためにサーバーを停止してください。</p>
+                    </div>
+                </section>
+                
+                <!-- Step 3 Section -->
+                <section id="step3" class="content-section space-y-6">
+                     <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 3: DB設定とSQL実行</h2>
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>このステップでは、データベース接続設定を行い、アプリケーション起動時にテーブルを作成するためのSQLを準備します。</p>
+                     </div>
+                     <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="dicon-file">jdbc.dicon</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="sql-file">create.sql</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="dicon-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`src/main/resources/jdbc.dicon`</h3>
+                                <p class="mb-4">H2 Databaseに接続するための設定です。Doltengが生成したファイルを編集します。</p>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN" 
+    "http://www.seasar.org/dtd/components24.dtd"&gt;
+&lt;components&gt;
+    &lt;include path="jta.dicon"/&gt;
+    &lt;include path="s2jdbc.dicon"/&gt;
+
+    &lt;component name="dataSource" class="org.seasar.extension.dbcp.impl.DataSourceImpl"&gt;
+        &lt;property name="driverClassName"&gt;"org.h2.Driver"&lt;/property&gt;
+        &lt;property name="URL"&gt;"jdbc:h2:mem:handson"&lt;/property&gt;
+        &lt;property name="user"&gt;"sa"&lt;/property&gt;
+        &lt;property name="password"&gt;""&lt;/property&gt;
+    &lt;/component&gt;
+&lt;/components&gt;
+                                </code>
+                                </div>
+                            </div>
+                            <div id="sql-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`s2jdbc-gen/sql/create.sql`</h3>
+                                <p class="mb-4">S2JDBC-Genタスクで利用する、テーブル作成用のDDLです。`s2jdbc-gen`フォルダを`src/main`と同じ階層に作成し、その中に`sql`フォルダと`create.sql`ファイルを作成します。</p>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+CREATE TABLE employee (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    age INT
+);
+                                </code>
+                                </div>
+                                <p class="mt-4">EclipseのAntビューから `s2jdbc-gen/build.xml` の `gen-ddl` ターゲットを実行すると、このSQLがH2データベース上で実行されます。</p>
+                            </div>
+                        </div>
+                     </div>
+                </section>
+
+                <!-- Step 4 Section -->
+                <section id="step4" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 4: EntityとServiceの作成</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>データベースのテーブルとJavaのオブジェクトを対応付ける「Entity」、そしてS2JDBCを使ってデータベース操作を行う「Service」を実装します。</p>
+                    </div>
+                    <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4 flex flex-wrap">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="entity-file">Entity</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="service-file">Service</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="entity-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`entity/Employee.java`</h3>
+                                <p class="mb-2">`com.example.handson.entity` パッケージに作成します。</p>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.handson.entity;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+public class Employee {
+
+    @Id
+    @GeneratedValue
+    public Integer id;
+
+    public String name;
+
+    public Integer age;
+}
+                                </code>
+                                </div>
+                            </div>
+                            <div id="service-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`service/EmployeeService.java`</h3>
+                                <p class="mb-2">`com.example.handson.service` パッケージに作成します。</p>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.handson.service;
+
+import com.example.handson.entity.Employee;
+import java.util.List;
+import org.seasar.extension.jdbc.service.S2AbstractService;
+
+public class EmployeeService extends S2AbstractService<Employee> {
+
+    public List<Employee> findAllOrderById() {
+        return select().orderBy("id").getResultList();
+    }
+
+    public Employee findById(Integer id) {
+        return select().id(id).getSingleResult();
+    }
+}
+                                </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Step 5 Section -->
+                <section id="step5" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 5: DTO, Form, Actionの作成</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>画面とデータのやり取りを担うクラス群を作成します。Entityの情報を画面に渡す「DTO」、フォームからの入力を受け取る「Form」、そしてユーザーのリクエストを処理する「Action」を実装します。</p>
+                    </div>
+                     <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="dto-file">DTO</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="form-file">Form</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="action-file">Action</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="dto-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`dto/EmployeeDto.java`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.handson.dto;
+
+import org.seasar.framework.container.annotation.tiger.Component;
+import org.seasar.framework.container.annotation.tiger.InstanceType;
+
+@Component(instance = InstanceType.SESSION)
+public class EmployeeDto {
+    public String id;
+    public String name;
+    public String age;
+}
+                                </code>
+                                </div>
+                            </div>
+                             <div id="form-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`form/EmployeeForm.java`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.handson.form;
+
+import org.seasar.struts.annotation.Required;
+
+public class EmployeeForm {
+
+    @Required
+    public String id;
+
+    @Required
+    public String name;
+
+    public String age;
+}
+                                </code>
+                                </div>
+                            </div>
+                            <div id="action-file" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`action/EmployeeAction.java`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+package com.example.handson.action;
+
+import com.example.handson.dto.EmployeeDto;
+import com.example.handson.entity.Employee;
+import com.example.handson.form.EmployeeForm;
+import com.example.handson.service.EmployeeService;
+import java.util.List;
+import javax.annotation.Resource;
+import org.seasar.struts.annotation.ActionForm;
+import org.seasar.struts.annotation.Execute;
+
+public class EmployeeAction {
+
+    @Resource
+    @ActionForm
+    protected EmployeeForm employeeForm;
+
+    @Resource
+    protected EmployeeService employeeService;
+
+    public List<EmployeeDto> employeeItems;
+
+    @Execute(validator = false)
+    public String list() {
+        employeeItems = employeeService.findAllOrderById().stream()
+            .map(e -> {
+                EmployeeDto dto = new EmployeeDto();
+                dto.id = e.id.toString();
+                dto.name = e.name;
+                dto.age = e.age.toString();
+                return dto;
+            }).collect(Collectors.toList());
+        return "list.jsp";
+    }
+    
+    // ... (登録、更新、削除のメソッドは後ほど追加)
+}
+                                </code>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </section>
+                
+                <!-- Step 6 Section -->
+                <section id="step6" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 6: JSP(画面)の作成</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>ユーザーがブラウザで見る画面をJSP (JavaServer Pages) で作成します。一覧画面と、登録・更新用のフォーム画面を用意します。</p>
+                    </div>
+                     <div class="code-tab-container bg-white p-6 rounded-lg shadow-sm">
+                        <div class="tab-buttons border-b border-gray-200 mb-4">
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="list-jsp">list.jsp</button>
+                            <button class="tab-btn py-2 px-4 border-b-2 border-transparent" data-target="edit-jsp">edit.jsp</button>
+                        </div>
+                        <div class="tab-content">
+                             <div id="list-jsp" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`src/main/webapp/view/employee/list.jsp`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+&lt;%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+&lt;title&gt;従業員一覧&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;従業員一覧&lt;/h1&gt;
+&lt;s:link href="edit"&gt;新規登録&lt;/s:link&gt;
+&lt;br /&gt;
+&lt;table border="1"&gt;
+    &lt;tr&gt;
+        &lt;th&gt;ID&lt;/th&gt;
+        &lt;th&gt;名前&lt;/th&gt;
+        &lt;th&gt;年齢&lt;/th&gt;
+        &lt;th&gt;操作&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;c:forEach var="employee" items="${employeeItems}"&gt;
+        &lt;tr&gt;
+            &lt;td&gt;${f:h(employee.id)}&lt;/td&gt;
+            &lt;td&gt;${f:h(employee.name)}&lt;/td&gt;
+            &lt;td&gt;${f:h(employee.age)}&lt;/td&gt;
+            &lt;td&gt;
+                &lt;s:link href="edit/${employee.id}"&gt;編集&lt;/s:link&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/c:forEach&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                                </code>
+                                </div>
+                            </div>
+                             <div id="edit-jsp" class="tab-pane">
+                                <h3 class="text-xl font-semibold mb-2">`src/main/webapp/view/employee/edit.jsp`</h3>
+                                <div class="code-block">
+                                <button class="copy-btn">Copy</button>
+                                <code>
+&lt;%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+&lt;title&gt;従業員情報フォーム&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;従業員情報&lt;/h1&gt;
+&lt;s:errors /&gt;
+&lt;s:form&gt;
+    &lt;html:hidden property="id" /&gt;
+    名前: &lt;html:text property="name" /&gt;&lt;br /&gt;
+    年齢: &lt;html:text property="age" /&gt;&lt;br /&gt;
+    &lt;input type="submit" name="submit" value="保存" /&gt;
+&lt;/s:form&gt;
+&lt;br /&gt;
+&lt;s:link href="list"&gt;一覧へ戻る&lt;/s:link&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                                </code>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </section>
+                
+                <!-- Step 7 Section -->
+                <section id="step7" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 7: 実行と確認</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p>いよいよ最終ステップです。作成したアプリケーションをサーバーで実行し、ブラウザで動作を確認します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">1. アプリケーションの実行</h3>
+                        <p>Eclipseの「サーバー」ビューからサーバーを起動します。</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 class="text-xl font-semibold">2. ブラウザで確認</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>一覧画面</strong>: <a href="http://localhost:8080/s2jdbc-handson/employee/list" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">http://localhost:8080/s2jdbc-handson/employee/list</a></li>
+                            <li><strong>新規登録</strong>: 一覧画面の「新規登録」リンクから登録。</li>
+                            <li><strong>更新</strong>: 一覧画面の「編集」リンクから更新。</li>
+                            <li><strong>削除</strong>: （発展課題で実装）</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Expantion Step Section -->
+                <section id="exp_step" class="content-section space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">発展課題</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <p class="mb-4">このハンズオンで作成したアプリケーションをさらに拡張するための課題です。ぜひチャレンジしてみてください。</p>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="bg-white p-4 rounded-lg shadow-sm"><strong>1. 更新・削除機能の実装:</strong> `EmployeeAction`に更新(update)と削除(delete)のメソッドを追加し、`edit.jsp`と`list.jsp`を修正して、CRUD操作を完成させましょう。</li>
+                        <li class="bg-white p-4 rounded-lg shadow-sm"><strong>2. 入力値検証 (Validation) の強化:</strong> `EmployeeForm`にアノテーションを追加して、名前の必須入力チェックや年齢の数値チェックなどを実装しましょう。</li>
+                        <li class="bg-white p-4 rounded-lg shadow-sm"><strong>3. ページネーション:</strong> 大量データを扱えるように、一覧画面にページング機能を追加してみましょう。S2JDBCの`limit()`, `offset()`メソッドを利用します。</li>
+                        <li class="bg-white p-4 rounded-lg shadow-sm"><strong>4. 検索機能:</strong> 名前や年齢で従業員を検索できる機能を追加してみましょう。</li>
+                    </ul>
+                </section>
+
+
+
+
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const tabContainers = document.querySelectorAll('.code-tab-container');
+    const copyButtons = document.querySelectorAll('.copy-btn');
+
+    function showSection(targetId) {
+        contentSections.forEach(section => {
+            section.classList.toggle('active', section.id === targetId);
+        });
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.dataset.target === targetId);
+        });
+        window.scrollTo(0, 0);
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = e.currentTarget.dataset.target;
+            showSection(targetId);
+        });
+    });
+
+    tabContainers.forEach(container => {
+        const tabButtons = container.querySelectorAll('.tab-btn');
+        const tabPanes = container.querySelectorAll('.tab-pane');
+        
+        if (tabButtons.length > 0) {
+            tabButtons[0].classList.add('active');
+            tabPanes.forEach(pane => pane.style.display = 'none');
+            const firstPaneId = tabButtons[0].dataset.target;
+            container.querySelector('#' + firstPaneId).style.display = 'block';
+        }
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const targetId = e.currentTarget.dataset.target;
+                
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                
+                tabPanes.forEach(pane => {
+                    pane.style.display = pane.id === targetId ? 'block' : 'none';
+                });
+            });
+        });
+    });
+
+    copyButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const codeElement = e.currentTarget.nextElementSibling;
+            const textToCopy = codeElement.innerText;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = e.currentTarget.textContent;
+                e.currentTarget.textContent = 'Copied!';
+                setTimeout(() => {
+                    e.currentTarget.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+    });
+
+    // Show the intro section by default
+    showSection('intro');
+});
+</script>
+
+</body>
+</html>
