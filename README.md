@@ -1,7 +1,7 @@
 # SpringBootHandsOn
 ## ハンズオンURL
-spring_bootハンズオンガイド[https://vertex-japan.github.io/SpringBootHandsOn/spring_boot%E3%83%8F%E3%83%B3%E3%82%BA%E3%82%AA%E3%83%B3%E3%82%AC%E3%82%A4%E3%83%89_vertex.html]
-
+[spring_bootハンズオンガイド](https://vertex-japan.github.io/SpringBootHandsOn/spring_boot%E3%83%8F%E3%83%B3%E3%82%BA%E3%82%AA%E3%83%B3%E3%82%AC%E3%82%A4%E3%83%89_vertex.html)
+[seasar2_ハンズオンガイド](https://vertex-japan.github.io/SpringBootHandsOn/seasar2_%E3%83%8F%E3%83%B3%E3%82%BA%E3%82%AA%E3%83%B3%E3%82%AC%E3%82%A4%E3%83%89_vertex.html)
 SpringBootを使ったWEBシステムの構築
 http://localhost:8081/home
 
