@@ -425,11 +425,11 @@ public class HelloController {
                 <section id="step3" class="content-section space-y-6">
                      <h2 class="text-3xl font-bold text-gray-900 border-b pb-4">Step 3: ビルド設定の変更</h2>
                      <div class="bg-white p-6 rounded-lg shadow-sm">
-                        <p>プロジェクトの心臓部であるビルド設定ファイル `build.gradle` を編集し、ORマッパーであるDomaのライブラリを追加します。これにより、Javaのコードから簡単にデータベースを操作できるようになります。</p>
+                        <p>プロジェクトの心臓部であるビルド設定ファイル `build.gradle` を編集し、Spring JDBC および バリデーション（Validation）のライブラリを追加します。これにより、データベースの操作や入力チェックを行えるようになります。</p>
                      </div>
                      <div class="bg-white p-6 rounded-lg shadow-sm">
                         <h3 class="text-xl font-semibold mb-2">`build.gradle` の更新</h3>
-                        <p class="mb-4">以下の内容で `build.gradle` ファイルを全文上書きしてください。Domaの依存関係とアノテーションプロセッサーの設定が追加されています。</p>
+                        <p class="mb-4">以下の内容で `build.gradle` ファイルを全文上書きしてください。Spring JDBC と Validation の依存関係が追加されています。</p>
                         <div class="code-block">
                             <button class="copy-btn">Copy</button>
                             <code>
@@ -459,8 +459,9 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    // Doma
+    // Spring JDBC & Validation
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     runtimeOnly 'com.h2database:h2'
     compileOnly 'org.projectlombok:lombok'
